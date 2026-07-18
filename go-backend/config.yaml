@@ -9,7 +9,7 @@ server:
 llm:
   provider: "minimax"
   base_url: "https://api.minimaxi.com/v1"
-  api_key: "sk-cp-St9eLxgX4SOvMQ-pEY4xcTOWAjiBHyngCCrZHno6UyGynlNXtvakIzgxVbVFTo_oKawFET_Cq2q6z-zMfba-P4aWipUJSGinOYXaaDAHNuw3BJJux_F2L2k"
+  api_key: "sk-cp-lFU8IRvlhWDK4ZGxtRu2D-FxYld_rMLn1w6PWOGZTDW0XRDYm50QEuWInOz73aXrDFg2h4peoPxq8jJIHp1VWYnjgQhCX_I9_cEeNPCAdsc6ahmOH4fTdGQ"
   default_model: "MiniMax-M3"
   web_search_model: "MiniMax-M3"
   image_description_model: "MiniMax-M3"
