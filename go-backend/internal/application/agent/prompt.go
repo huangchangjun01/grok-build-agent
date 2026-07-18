@@ -106,10 +106,24 @@ func (b *PromptBuilder) BuildMessages(conv *conversation.Conversation, toolDefs 
 	}
 
 	for _, msg := range msgsToInclude {
-		messages = append(messages, llm.ChatMessage{
-			Role:    msg.Role,
-			Content: msg.Content,
-		})
+		chatMsg := llm.ChatMessage{
+			Role:       msg.Role,
+			Content:    msg.Content,
+			ToolCallID: msg.ToolCallID,
+			Name:       msg.Name,
+		}
+		// Include tool_calls for assistant messages
+		for _, tc := range msg.ToolCalls {
+			chatMsg.ToolCalls = append(chatMsg.ToolCalls, llm.ToolCall{
+				ID:   tc.ID,
+				Type: tc.Type,
+				Function: llm.FunctionCall{
+					Name:      tc.Function.Name,
+					Arguments: tc.Function.Arguments,
+				},
+			})
+		}
+		messages = append(messages, chatMsg)
 	}
 
 	b.logger.WithFields(logrus.Fields{

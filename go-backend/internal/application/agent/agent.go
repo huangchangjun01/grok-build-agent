@@ -248,6 +248,17 @@ func (a *Agent) agentLoop(
 				Role:    string(domain.RoleAssistant),
 				Content: textContent,
 			}
+			// Include tool_calls for the LLM to reference
+			for _, tc := range toolCalls {
+				assistantMsg.ToolCalls = append(assistantMsg.ToolCalls, conversation.ToolCall{
+					ID:   tc.ID,
+					Type: tc.Type,
+					Function: conversation.FunctionCall{
+						Name:      tc.Function.Name,
+						Arguments: tc.Function.Arguments,
+					},
+				})
+			}
 			conv.AddMessage(assistantMsg)
 
 			// Save to repository
@@ -276,8 +287,10 @@ func (a *Agent) agentLoop(
 			// Add tool results to the conversation
 			for _, tr := range toolResults {
 				conv.AddMessage(conversation.Message{
-					Role:    tr.Role,
-					Content: tr.Content,
+					Role:       tr.Role,
+					Content:    tr.Content,
+					ToolCallID: tr.ToolCallID,
+					Name:       tr.Name,
 				})
 			}
 
