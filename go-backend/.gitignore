@@ -1,0 +1,14 @@
+# Binary
+server
+
+# Data
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

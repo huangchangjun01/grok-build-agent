@@ -9,7 +9,7 @@ SpaceXC Grok Build 是一个强大的终端 AI 编程代理工具，使用 Rust 
 |--------|------|
 | 前后端通信协议 | HTTP REST + WebSocket |
 | 重写范围 | 全部 80+ crate 功能，无遗漏 |
-| 存储方案 | SQLite + GORM |
+| 存储方案 | JSONL + SQLite（保持原系统实现） |
 | 高级功能 | 全部包含 (SubAgent/Goal/PlanMode/MCP) |
 | 项目结构 | `/workspace/go-backend/` |
 | 认证机制 | API Key 直连（无认证） |
@@ -123,7 +123,7 @@ SpaceXC Grok Build 是一个强大的终端 AI 编程代理工具，使用 Rust 
 | 通信 | Leader/Stdio 协议 | **HTTP REST + WebSocket** |
 | 后端 | xai-grok-shell | Gin + DDD 分层 |
 | LLM | async-openai | Go HTTP Client → MiniMax API |
-| 存储 | JSONL + SQLite | GORM + SQLite |
+| 存储 | JSONL + SQLite | JSONL + SQLite（保持原系统实现） |
 | 工具 | Rust 原生实现 | Go 原生实现 |
 | MCP | xai-grok-mcp | Go MCP 客户端 |
 | 配置 | TOML (config.toml) | YAML (config.yaml) |
@@ -134,7 +134,7 @@ SpaceXC Grok Build 是一个强大的终端 AI 编程代理工具，使用 Rust 
 - 架构采用 DDD (领域驱动设计) 分层
 - 前端 ratatui TUI 保持不变，通过 HTTP REST + WebSocket 与后端通信
 - 工具系统使用 Go 原生实现
-- 存储层使用 GORM + SQLite
+- 存储层使用 JSONL + SQLite（保持原系统实现：JSONL 主存储 + SQLite FTS 全文搜索）
 - 配置格式从 TOML 改为 YAML
 - 认证从 OAuth 改为 API Key 直连
 
@@ -168,8 +168,11 @@ SpaceXC Grok Build 是一个强大的终端 AI 编程代理工具，使用 Rust 
 ### Requirement: 完整工具系统
 系统 SHALL 实现全部原系统工具。
 
-### Requirement: 会话管理
-系统 SHALL 支持会话 CRUD、持久化、压缩、分叉、回退、搜索、导出。
+### Requirement: 会话持久化存储
+系统 SHALL 使用 JSONL + SQLite 的存储方案（保持原系统实现）：
+- JSONL 文件作为主存储：每行一条 JSON 消息，追加写入，日志式存储
+- SQLite FTS5 作为全文搜索索引：对消息内容建立全文索引
+- 写入 JSONL 时同步更新 SQLite 索引
 
 ### Requirement: 高级功能
 系统 SHALL 实现 SubAgent、Goal、PlanMode、MCP 等全部高级功能。

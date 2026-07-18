@@ -1,0 +1,73 @@
+# SpaceXC Grok Build Go Backend Configuration
+
+server:
+  host: "0.0.0.0"
+  port: 8080
+  read_timeout: 30s
+  write_timeout: 30s
+
+llm:
+  provider: "minimax"
+  base_url: "https://api.minimaxi.com/v1"
+  api_key: "sk-cp-St9eLxgX4SOvMQ-pEY4xcTOWAjiBHyngCCrZHno6UyGynlNXtvakIzgxVbVFTo_oKawFET_Cq2q6z-zMfba-P4aWipUJSGinOYXaaDAHNuw3BJJux_F2L2k"
+  default_model: "MiniMax-M3"
+  web_search_model: "MiniMax-M3"
+  image_description_model: "MiniMax-M3"
+  session_summary_model: "MiniMax-M3"
+  models:
+    - model: "MiniMax-M3"
+      name: "MiniMax M3"
+      description: "MiniMax flagship model for coding tasks"
+      context_window: 200000
+      temperature: 0.7
+      top_p: 0.95
+      max_tokens: 4096
+
+database:
+  driver: "sqlite3"
+  dsn: "./data/grok.db"
+  max_open_conns: 10
+  max_idle_conns: 5
+  conn_max_lifetime: 3600s
+
+storage:
+  sessions_dir: "./data/sessions"
+  jsonl_dir: "./data/jsonl"
+
+workspace:
+  default_work_dir: "."
+  max_file_size: 104857600  # 100MB
+  allowed_commands: []
+
+logging:
+  level: "debug"
+  format: "text"  # text or json
+  output: "stdout"  # stdout or file path
+  file_path: "./data/logs/grok.log"
+
+agent:
+  max_turns: 50
+  context_window: 200000
+  compaction_threshold: 0.8  # 80% of context window
+  enable_plan_mode: true
+  enable_goal_system: true
+  enable_subagent: true
+  enable_mcp: true
+
+tools:
+  permissions:
+    # Default permission rules for tools
+    read_file: "allow"
+    write_file: "ask"
+    search_replace: "allow"
+    list_dir: "allow"
+    grep: "allow"
+    glob: "allow"
+    bash: "ask"
+    web_search: "allow"
+    web_fetch: "allow"
+    todo_write: "allow"
+    task: "allow"
+    ask_user_question: "allow"
+    image_gen: "ask"
+    video_gen: "ask"
