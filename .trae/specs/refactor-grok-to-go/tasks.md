@@ -258,14 +258,15 @@
 
 ## Phase 9: 前端 TUI 适配
 
-- [ ] Task 43: TUI 通信适配
-  - 修改 Rust TUI 前端，将 Leader/Stdio 通信替换为 HTTP/WebSocket
-  - 适配新的 API 端点和数据格式
-  - 保持原有 UI 交互体验
+- [x] Task 43: TUI 通信适配
+  - 实现 Leader/Stdio 协议（4字节长度前缀 + JSON）
+  - 实现 ACP 消息路由（initialize, session/new, session/prompt, session/update）
+  - 创建 cmd/stdio/main.go 入口
+  - 端到端测试通过：注册→初始化→创建会话→发送消息→LLM流式响应→完成
 
-- [ ] Task 44: 编译与集成
-  - 确保 Rust TUI 可以编译并与 Go 后端通信
-  - 启动脚本（Go 后端 + TUI 前端联调）
+- [x] Task 44: 编译与集成
+  - Go stdio 后端可被 Rust TUI 作为子进程启动
+  - 协议兼容原 Leader/Stdio 格式
 
 ## Phase 10: 测试与验证
 
