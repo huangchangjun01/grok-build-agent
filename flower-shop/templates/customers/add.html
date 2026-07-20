@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}添加客户 · 花语小店{% endblock %}
+{% block content %}
+<section class="card narrow">
+    <div class="card-header">
+        <h2>添加客户</h2>
+        <a class="btn btn-link" href="{{ url_for('customer_list') }}">← 返回列表</a>
+    </div>
+    <form method="post" class="form">
+        <label>
+            <span>姓名 *</span>
+            <input type="text" name="name" maxlength="100" required placeholder="例如：李华">
+        </label>
+        <label>
+            <span>联系电话 *</span>
+            <input type="text" name="phone" maxlength="30" required placeholder="例如：13800000000">
+        </label>
+        <label>
+            <span>邮箱</span>
+            <input type="email" name="email" maxlength="120" placeholder="例如：lihua@example.com">
+        </label>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">保存</button>
+            <a class="btn btn-secondary" href="{{ url_for('customer_list') }}">取消</a>
+        </div>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    </form>
+</section>
+{% endblock %}

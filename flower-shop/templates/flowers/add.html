@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}添加鲜花 · 花语小店{% endblock %}
+{% block content %}
+<section class="card narrow">
+    <div class="card-header">
+        <h2>添加鲜花</h2>
+        <a class="btn btn-link" href="{{ url_for('flower_list') }}">← 返回库存</a>
+    </div>
+    <form method="post" class="form">
+        <label>
+            <span>名称 *</span>
+            <input type="text" name="name" maxlength="100" required placeholder="例如：红玫瑰">
+        </label>
+        <label>
+            <span>分类</span>
+            <input type="text" name="category" maxlength="100" placeholder="例如：玫瑰 / 百合">
+        </label>
+        <label>
+            <span>单价 (元) *</span>
+            <input type="number" name="price" step="0.01" min="0" required placeholder="9.90">
+        </label>
+        <label>
+            <span>初始库存 *</span>
+            <input type="number" name="stock" step="1" min="0" required placeholder="50">
+        </label>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">保存</button>
+            <a class="btn btn-secondary" href="{{ url_for('flower_list') }}">取消</a>
+        </div>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    </form>
+</section>
+{% endblock %}

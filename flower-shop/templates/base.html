@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}花店管理系统{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="{{ url_for('index') }}">
+                <span class="brand-mark">🌸</span>
+                <span>花语小店</span>
+            </a>
+            <nav class="main-nav">
+                <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">首页</a>
+                <a href="{{ url_for('flower_list') }}" class="{% if request.endpoint and request.endpoint.startswith('flower') %}active{% endif %}">鲜花库存</a>
+                <a href="{{ url_for('customer_list') }}" class="{% if request.endpoint and request.endpoint.startswith('customer') %}active{% endif %}">客户管理</a>
+                <a href="{{ url_for('order_list') }}" class="{% if request.endpoint and request.endpoint.startswith('order') %}active{% endif %}">订单管理</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashes">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <small>© 花语小店 · 基于 Flask + SQLite</small>
+        </div>
+    </footer>
+</body>
+</html>

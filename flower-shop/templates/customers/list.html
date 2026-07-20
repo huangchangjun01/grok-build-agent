@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}客户管理 · 花语小店{% endblock %}
+{% block content %}
+<section class="card">
+    <div class="card-header">
+        <h2>客户列表</h2>
+        <a class="btn btn-primary" href="{{ url_for('customer_add') }}">+ 添加客户</a>
+    </div>
+    {% if customers %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>姓名</th>
+                    <th>电话</th>
+                    <th>邮箱</th>
+                    <th>注册时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in customers %}
+                    <tr>
+                        <td>#{{ customer.id }}</td>
+                        <td>{{ customer.name }}</td>
+                        <td>{{ customer.phone }}</td>
+                        <td>{{ customer.email or '—' }}</td>
+                        <td>{{ customer.created_at }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="empty-state">还没有客户，点击右上角“添加客户”开始建立客户档案。</p>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}鲜花库存 · 花语小店{% endblock %}
+{% block content %}
+<section class="card">
+    <div class="card-header">
+        <h2>鲜花库存</h2>
+        <a class="btn btn-primary" href="{{ url_for('flower_add') }}">+ 添加鲜花</a>
+    </div>
+    {% if flowers %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>名称</th>
+                    <th>分类</th>
+                    <th>单价</th>
+                    <th>库存</th>
+                    <th>入库时间</th>
+                    <th class="actions">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for flower in flowers %}
+                    <tr>
+                        <td>#{{ flower.id }}</td>
+                        <td>{{ flower.name }}</td>
+                        <td>{{ flower.category or '—' }}</td>
+                        <td>{{ format_currency(flower.price) }}</td>
+                        <td>
+                            {% if flower.stock == 0 %}
+                                <span class="badge badge-danger">缺货</span>
+                            {% elif flower.stock <= 5 %}
+                                <span class="badge badge-warn">{{ flower.stock }}</span>
+                            {% else %}
+                                <span class="badge badge-ok">{{ flower.stock }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ flower.created_at }}</td>
+                        <td class="actions">
+                            <form method="post" action="{{ url_for('flower_delete', flower_id=flower.id) }}"
+                                  onsubmit="return confirm('确定要删除『{{ flower.name }}』吗？');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                <button type="submit" class="btn btn-danger btn-sm">删除</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="empty-state">还没有鲜花库存，点击右上角“添加鲜花”开始上架吧。</p>
+    {% endif %}
+</section>
+{% endblock %}

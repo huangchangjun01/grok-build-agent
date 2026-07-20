@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}首页 · 花语小店{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>欢迎使用花语小店管理系统</h1>
+    <p>在这里管理鲜花库存、维护客户信息并追踪每一笔订单。</p>
+</section>
+
+<section class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-label">鲜花品种</span>
+        <span class="stat-value">{{ stats.flowers }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">在售库存</span>
+        <span class="stat-value">{{ stats.stock }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">注册客户</span>
+        <span class="stat-value">{{ stats.customers }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">历史订单</span>
+        <span class="stat-value">{{ stats.orders }}</span>
+    </div>
+</section>
+
+<div class="two-columns">
+    <section class="card">
+        <div class="card-header">
+            <h2>库存预警</h2>
+            <a class="btn btn-link" href="{{ url_for('flower_list') }}">管理库存 →</a>
+        </div>
+        {% if low_stock %}
+            <table class="data-table">
+                <thead>
+                    <tr><th>名称</th><th>分类</th><th>剩余</th></tr>
+                </thead>
+                <tbody>
+                    {% for flower in low_stock %}
+                        <tr>
+                            <td>{{ flower.name }}</td>
+                            <td>{{ flower.category or '—' }}</td>
+                            <td><span class="badge badge-warn">{{ flower.stock }}</span></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="empty-state">所有鲜花库存充足 🌷</p>
+        {% endif %}
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h2>最近订单</h2>
+            <a class="btn btn-link" href="{{ url_for('order_list') }}">查看全部 →</a>
+        </div>
+        {% if recent_orders %}
+            <table class="data-table">
+                <thead>
+                    <tr><th>#</th><th>客户</th><th>鲜花</th><th>金额</th></tr>
+                </thead>
+                <tbody>
+                    {% for order in recent_orders %}
+                        <tr>
+                            <td>#{{ order.id }}</td>
+                            <td>{{ order.customer_name }}</td>
+                            <td>{{ order.flower_name }} × {{ order.quantity }}</td>
+                            <td>{{ format_currency(order.total_amount) }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="empty-state">还没有订单，去创建第一笔订单吧 ✿</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
