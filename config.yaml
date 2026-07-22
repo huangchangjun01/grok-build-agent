@@ -24,7 +24,7 @@ llm:
       max_tokens: 4096
 
 database:
-  driver: "sqlite3"
+  driver: "sqlite"
   dsn: "./data/grok.db"
   max_open_conns: 10
   max_idle_conns: 5

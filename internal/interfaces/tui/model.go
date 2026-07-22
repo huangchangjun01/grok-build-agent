@@ -63,6 +63,7 @@ func NewModel(
 	ta.SetHeight(3)
 	ta.FocusedStyle.CursorLine = lipgloss.NewStyle()
 	ta.ShowLineNumbers = false
+	ta.Focus() // 让输入框获得焦点，否则无法接收键盘输入
 
 	vp := viewport.New(80, 20)
 	vp.Style = lipgloss.NewStyle().Padding(0, 1)

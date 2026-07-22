@@ -179,7 +179,7 @@ go build -o bin/grok-stdio ./cmd/stdio/
 | HTTP 框架 | Gin |
 | WebSocket | gorilla/websocket |
 | TUI | Bubble Tea (charmbracelet) |
-| 数据库 | SQLite (mattn/go-sqlite3) |
+| 数据库 | SQLite (modernc.org/sqlite，纯 Go 无需 CGO) |
 | 存储 | JSONL + SQLite |
 | 日志 | logrus |
 | 配置 | viper |
@@ -200,7 +200,7 @@ llm:
   default_model: "MiniMax-M3"
 
 database:
-  driver: "sqlite3"
+  driver: "sqlite"
   dsn: "./data/grok.db"
 
 agent:
