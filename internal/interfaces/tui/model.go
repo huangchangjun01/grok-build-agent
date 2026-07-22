@@ -60,9 +60,26 @@ func NewModel(
 	ta.Placeholder = "Type your message... (Enter to send, Esc to quit)"
 	ta.CharLimit = 8000
 	ta.SetWidth(80)
-	ta.SetHeight(3)
-	ta.FocusedStyle.CursorLine = lipgloss.NewStyle()
+	ta.SetHeight(1)
 	ta.ShowLineNumbers = false
+	ta.Prompt = ""
+
+	// 柔和风格的输入框样式
+	ta.FocusedStyle.CursorLine = lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#8b7eac"))
+	ta.FocusedStyle.Prompt = lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#8b7eac"))
+	ta.FocusedStyle.Text = lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#d4cfe0"))
+	ta.BlurredStyle.Prompt = lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#6b5e8c"))
+	ta.BlurredStyle.Text = lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#a098b8"))
+	ta.FocusedStyle.Placeholder = lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#5a5068"))
+	ta.BlurredStyle.Placeholder = lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#5a5068"))
+
 	ta.Focus() // 让输入框获得焦点，否则无法接收键盘输入
 
 	vp := viewport.New(80, 20)
@@ -226,8 +243,8 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
-		headerHeight := 3
-		footerHeight := 5
+		headerHeight := 2
+		footerHeight := 3
 		m.viewport.Width = msg.Width
 		m.viewport.Height = msg.Height - headerHeight - footerHeight
 		m.textarea.SetWidth(msg.Width - 4)
@@ -297,17 +314,18 @@ func (m *Model) View() string {
 		return "Goodbye!\n"
 	}
 
+	// 柔和配色方案
 	titleStyle := lipgloss.NewStyle().
 		Bold(true).
-		Foreground(lipgloss.Color("#7c3aed")).
+		Foreground(lipgloss.Color("#9b8ec4")).
 		Padding(0, 1).
 		Width(m.width)
 
 	title := titleStyle.Render("SpaceXC Grok Build (Go)")
 
 	statusStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#a78bfa")).
-		Background(lipgloss.Color("#1e1b4b")).
+		Foreground(lipgloss.Color("#b8a9d4")).
+		Background(lipgloss.Color("#2a2533")).
 		Padding(0, 1).
 		Width(m.width)
 
@@ -315,8 +333,9 @@ func (m *Model) View() string {
 
 	inputStyle := lipgloss.NewStyle().
 		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("#7c3aed")).
+		BorderForeground(lipgloss.Color("#8b7eac")).
 		BorderTop(true).
+		Padding(0, 1).
 		Width(m.width)
 
 	input := inputStyle.Render(m.textarea.View())
@@ -343,10 +362,10 @@ func (m *Model) addMessage(role, content string) {
 
 func (m *Model) updateViewport() {
 	var sb strings.Builder
-	userStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#3b82f6")).Bold(true)
-	assistantStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#10b981")).Bold(true)
-	toolStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#f59e0b")).Bold(true)
-	systemStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#ef4444")).Bold(true)
+	userStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#7ba5c8")).Bold(true)
+	assistantStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#7db89a")).Bold(true)
+	toolStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#c9a96e")).Bold(true)
+	systemStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#d4858a")).Bold(true)
 
 	for _, msg := range m.messages {
 		switch msg.Role {
