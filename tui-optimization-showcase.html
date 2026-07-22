@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TUI 命令行优化效果展示</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0d0d1a;
+            color: #d4cfe0;
+            min-height: 100vh;
+        }
+        .header {
+            text-align: center;
+            padding: 48px 24px 32px;
+            background: linear-gradient(180deg, #1a1530 0%, #0d0d1a 100%);
+            border-bottom: 1px solid #2a2533;
+        }
+        .header h1 {
+            font-size: 2rem;
+            color: #9b8ec4;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: #8b7eac;
+            font-size: 1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        .comparison-card {
+            background: #14142b;
+            border: 1px solid #2a2533;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 48px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .comparison-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(155, 142, 196, 0.08);
+        }
+        .card-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid #2a2533;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .card-number {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        .card-header h2 {
+            font-size: 1.25rem;
+            color: #d4cfe0;
+            font-weight: 600;
+        }
+        .card-header .badge {
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .badge.issue { background: #3d2025; color: #d4858a; }
+        .badge.fix { background: #1d3028; color: #7db89a; }
+        .card-body {
+            padding: 24px 32px;
+        }
+        .card-body p {
+            color: #a098b8;
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+        .image-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 8px;
+        }
+        .image-col {
+            background: #0d0d1a;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #2a2533;
+        }
+        .image-col img {
+            width: 100%;
+            display: block;
+        }
+        .image-label {
+            padding: 10px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            border-bottom: 1px solid #2a2533;
+        }
+        .image-label.before {
+            background: #3d2025;
+            color: #d4858a;
+        }
+        .image-label.after {
+            background: #1d3028;
+            color: #7db89a;
+        }
+        .color-swatch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .color-swatch {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #0d0d1a;
+            border-radius: 10px;
+            border: 1px solid #2a2533;
+        }
+        .color-dot {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        .color-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .color-name {
+            font-size: 0.8rem;
+            color: #8b7eac;
+            margin-bottom: 2px;
+        }
+        .color-hex {
+            font-size: 0.9rem;
+            color: #d4cfe0;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-weight: 600;
+        }
+        .color-arrow {
+            color: #8b7eac;
+            font-size: 0.85rem;
+            margin: 0 4px;
+        }
+        .footer {
+            text-align: center;
+            padding: 32px;
+            color: #5a5068;
+            font-size: 0.85rem;
+            border-top: 1px solid #2a2533;
+        }
+        .arch-diagram {
+            background: #0d0d1a;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #2a2533;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+        }
+        .arch-layer {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .arch-layer.title-bar { background: #1d1535; color: #9b8ec4; border: 1px solid #2d1f52; }
+        .arch-layer.viewport { background: #111827; color: #7db89a; border: 1px solid #1d3828; }
+        .arch-layer.status { background: #1a1528; color: #b8a9d4; border: 1px solid #2a2533; }
+        .arch-layer.input { background: #151328; color: #8b7eac; border: 1px solid #2a2533; }
+        .arch-arrow { text-align: center; color: #5a5068; font-size: 0.8rem; }
+        @media (max-width: 768px) {
+            .image-row { grid-template-columns: 1fr; }
+            .color-swatch-grid { grid-template-columns: 1fr; }
+            .header h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SpaceXC Grok Build TUI — 优化效果展示</h1>
+        <p>基于 Bubble Tea 框架的终端命令行界面，针对配色、分层布局和输入框体验进行了全面优化</p>
+    </div>
+
+    <div class="container">
+        <!-- ====== Card 1: 配色方案对比 ====== -->
+        <div class="comparison-card">
+            <div class="card-header">
+                <div class="card-number" style="background:#2d1f52;color:#9b8ec4;">1</div>
+                <h2>配色方案优化 — 从刺眼到柔和</h2>
+                <span class="badge issue">问题</span>
+                <span class="badge fix">已修复</span>
+            </div>
+            <div class="card-body">
+                <p>原配色使用了高饱和度色值（如 <code style="color:#7c3aed">#7c3aed</code>、<code style="color:#ef4444">#ef4444</code>），在深色终端中对比度过高，造成视觉疲劳。优化后采用低饱和度的柔色调，更护眼且现代。</p>
+                <div class="color-swatch-grid">
+                    <div class="color-swatch">
+                        <div class="color-dot" style="background:#7c3aed;"></div>
+                        <div class="color-info">
+                            <div class="color-name">标题 / 标题栏</div>
+                            <div class="color-hex">#7c3aed <span class="color-arrow">→</span> #9b8ec4</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-dot" style="background:#ef4444;"></div>
+                        <div class="color-info">
+                            <div class="color-name">系统消息</div>
+                            <div class="color-hex">#ef4444 <span class="color-arrow">→</span> #d4858a</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-dot" style="background:#3b82f6;"></div>
+                        <div class="color-info">
+                            <div class="color-name">用户消息</div>
+                            <div class="color-hex">#3b82f6 <span class="color-arrow">→</span> #7ba5c8</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-dot" style="background:#10b981;"></div>
+                        <div class="color-info">
+                            <div class="color-name">助手消息</div>
+                            <div class="color-hex">#10b981 <span class="color-arrow">→</span> #7db89a</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-dot" style="background:#f59e0b;"></div>
+                        <div class="color-info">
+                            <div class="color-name">工具消息</div>
+                            <div class="color-hex">#f59e0b <span class="color-arrow">→</span> #c9a96e</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-dot" style="background:#a78bfa;"></div>
+                        <div class="color-info">
+                            <div class="color-name">状态栏 / 边框</div>
+                            <div class="color-hex">#a78bfa <span class="color-arrow">→</span> #b8a9d4 / #8b7eac</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="image-row">
+                    <div class="image-col">
+                        <div class="image-label before">优化前 — 高饱和度刺眼配色</div>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=A%20dark%20terminal%20CLI%20interface%20with%20harsh%20bright%20colors.%20Title%20in%20vivid%20purple%20%237c3aed%2C%20user%20messages%20in%20bright%20blue%20%233b82f6%2C%20assistant%20messages%20in%20bright%20emerald%20green%20%2310b981%2C%20tool%20messages%20in%20bright%20amber%20%23f59e0b%2C%20system%20messages%20in%20bright%20red%20%23ef4444%2C%20border%20in%20vivid%20purple.%20The%20colors%20are%20oversaturated%20and%20strain%20the%20eyes%20against%20dark%20background.%20Clean%20terminal%20UI%20screenshot%20style.&image_size=landscape_16_9" alt="优化前配色" loading="lazy">
+                    </div>
+                    <div class="image-col">
+                        <div class="image-label after">优化后 — 柔和护眼配色</div>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=A%20dark%20terminal%20CLI%20interface%20with%20soft%20muted%20pastel%20colors.%20Title%20in%20soft%20lavender%20%239b8ec4%2C%20user%20messages%20in%20soft%20muted%20blue%20%237ba5c8%2C%20assistant%20messages%20in%20soft%20sage%20green%20%237db89a%2C%20tool%20messages%20in%20soft%20warm%20gold%20%23c9a96e%2C%20system%20messages%20in%20soft%20dusty%20rose%20%23d4858a%2C%20border%20in%20muted%20gray-purple%20%238b7eac.%20The%20colors%20are%20gentle%20and%20easy%20on%20the%20eyes%20against%20dark%20background.%20Clean%20terminal%20UI%20screenshot%20style.&image_size=landscape_16_9" alt="优化后配色" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== Card 2: 分层布局对比 ====== -->
+        <div class="comparison-card">
+            <div class="card-header">
+                <div class="card-number" style="background:#1d3828;color:#7db89a;">2</div>
+                <h2>分层布局优化 — 清晰的三层结构</h2>
+                <span class="badge issue">问题</span>
+                <span class="badge fix">已修复</span>
+            </div>
+            <div class="card-body">
+                <p>优化前 viewport 高度计算不准确（headerHeight=3, footerHeight=5），运行过程内容会溢出到输入框区域，造成视觉混乱。优化后精确计算各层高度，确保三层结构各自独立不重叠。</p>
+                <div class="arch-diagram">
+                    <div class="arch-layer title-bar">标题栏 — Title Bar (headerHeight=2)</div>
+                    <div class="arch-arrow">▼</div>
+                    <div class="arch-layer viewport">消息视口 — Viewport (中间层，运行过程内容)</div>
+                    <div class="arch-arrow">▼</div>
+                    <div class="arch-layer status">状态栏 — Status Bar</div>
+                    <div class="arch-arrow">▼</div>
+                    <div class="arch-layer input">输入区域 — Input Area (footerHeight=3)</div>
+                </div>
+                <div class="image-row" style="margin-top:20px;">
+                    <div class="image-col">
+                        <div class="image-label before">优化前 — 内容溢出侵占输入框</div>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=A%20dark%20terminal%20TUI%20with%20layout%20overflow%20problem.%20The%20text%20content%20in%20the%20viewport%20is%20overflowing%20downward%20and%20encroaching%20into%20the%20text%20input%20area%20at%20the%20bottom.%20The%20input%20box%20shows%203%20lines%20height%20but%20looks%20broken%20with%20content%20bleeding%20into%20it.%20No%20clear%20visual%20separation%20between%20output%20and%20input.%20Messy%20terminal%20layout.%20Clean%20screenshot%20style.&image_size=landscape_16_9" alt="优化前分层问题" loading="lazy">
+                    </div>
+                    <div class="image-col">
+                        <div class="image-label after">优化后 — 三层结构清晰分离</div>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=A%20dark%20terminal%20TUI%20with%20clean%20three-layer%20layout.%20Top%20layer%20is%20a%20title%20bar%20with%20app%20name.%20Middle%20layer%20is%20a%20scrollable%20viewport%20showing%20chat%20messages%20with%20soft%20colors.%20Bottom%20layer%20is%20a%20compact%20single-line%20text%20input%20area%20separated%20by%20a%20subtle%20border%20line.%20All%20three%20layers%20are%20clearly%20separated%20with%20no%20overlap.%20Professional%20terminal%20UI.%20Clean%20screenshot%20style.&image_size=landscape_16_9" alt="优化后三层布局" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== Card 3: 输入框对比 ====== -->
+        <div class="comparison-card">
+            <div class="card-header">
+                <div class="card-number" style="background:#1d2535;color:#7ba5c8;">3</div>
+                <h2>输入框优化 — 从多行到单行</h2>
+                <span class="badge issue">问题</span>
+                <span class="badge fix">已修复</span>
+            </div>
+            <div class="card-body">
+                <p>优化前 textarea 高度设为 3，视觉上占多行空间但实际只能单行输入（Enter 即发送），造成空间浪费且视觉误导。优化后改为 SetHeight(1)，并配置了完整的焦点/失焦样式（文字色、光标色、占位符色），输入区域更紧凑美观。</p>
+                <div class="image-row">
+                    <div class="image-col">
+                        <div class="image-label before">优化前 — 多行输入框 (SetHeight=3)</div>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=A%20dark%20terminal%20TUI%20showing%20a%20multi-line%20text%20input%20area%20at%20the%20bottom.%20The%20input%20box%20is%203%20lines%20tall%20with%20lots%20of%20empty%20space%2C%20but%20only%20the%20first%20line%20is%20usable%20for%20typing.%20The%20extra%202%20lines%20are%20wasted%20space.%20The%20input%20area%20looks%20oversized%20and%20visually%20unbalanced.%20Professional%20terminal%20UI%20screenshot%20style.&image_size=landscape_16_9" alt="优化前多行输入框" loading="lazy">
+                    </div>
+                    <div class="image-col">
+                        <div class="image-label after">优化后 — 单行输入框 (SetHeight=1)</div>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=A%20dark%20terminal%20TUI%20showing%20a%20compact%20single-line%20text%20input%20area%20at%20the%20bottom.%20The%20input%20box%20is%20exactly%201%20line%20tall%20with%20soft%20gray-purple%20border%20on%20top.%20The%20placeholder%20text%20says%20Type%20your%20message%20in%20dim%20color.%20The%20cursor%20is%20a%20soft%20purple%20color.%20The%20design%20is%20clean%20and%20minimal%20with%20no%20wasted%20space.%20Professional%20terminal%20UI%20screenshot%20style.&image_size=landscape_16_9" alt="优化后单行输入框" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>SpaceXC Grok Build TUI — 基于 Bubble Tea MVU 架构 | 优化日期 2026-07-22</p>
+    </div>
+</body>
+</html>
